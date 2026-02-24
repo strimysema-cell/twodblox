@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>TwodBlox Studio</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap');
+*{margin:0;padding:0;box-sizing:border-box;user-select:none;}
+html,body{width:100%;height:100%;overflow:hidden;background:#1e1e2e;}
+body{font-family:'Nunito',sans-serif;font-size:12px;color:#cdd6f4;}
+
+/* ─── MAIN MENU ─────────────────────────────── */
+#main-menu{
+  position:fixed;inset:0;z-index:1000;
+  background:radial-gradient(ellipse at 20% 50%,#1a0800 0%,#0d0d0d 60%);
+  display:flex;
+}
+.mm-sidebar{
+  width:280px;background:#111;border-right:1px solid #FF6B0022;
+  display:flex;flex-direction:column;padding:0;flex-shrink:0;
+}
+.mm-logo{
+  padding:32px 28px 24px;border-bottom:1px solid #1a1a2a;
+}
+.mm-logo-row{display:flex;align-items:center;gap:12px;margin-bottom:4px;}
+.mm-title{font-size:24px;font-weight:900;letter-spacing:2px;color:#FF6B00;}
+.mm-sub{font-size:10px;color:#FF6B0055;letter-spacing:4px;text-transform:uppercase;}
+.mm-nav{flex:1;padding:12px 0;overflow-y:auto;}
+.mm-nav-item{
+  display:flex;align-items:center;gap:12px;padding:12px 24px;
+  cursor:pointer;transition:all .15s;border-left:3px solid transparent;
+  font-weight:700;font-size:13px;color:#666;
+}
+.mm-nav-item:hover{background:#FF6B0011;color:#aaa;border-left-color:#FF6B0033;}
+.mm-nav-item.active{background:#FF6B0022;color:#FF8C00;border-left-color:#FF6B00;}
+.mm-nav-item .ico{font-size:18px;width:24px;text-align:center;}
+.mm-nav-sep{height:1px;background:#1a1a2a;margin:8px 0;}
+.mm-bottom{padding:16px 20px;border-top:1px solid #1a1a2a;}
+.mm-user{display:flex;align-items:center;gap:10px;padding:10px;background:#0d0d0d;border-radius:10px;}
+.mm-avatar{width:36px;height:36px;border-radius:8px;background:linear-gradient(135deg,#FF6B00,#FF8C00);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:900;color:#0d0d0d;}
+.mm-uname{font-weight:800;font-size:13px;color:#FF8C00;}
+.mm-bux{font-size:11px;color:#666;}
+
+.mm-content{flex:1;display:flex;flex-direction:column;}
+
+/* NEW PLACE / RECENTS */
+.mm-page{flex:1;padding:40px 48px;overflow-y:auto;display:none;}
+.mm-page.active{display:block;}
+.mm-page-title{font-size:26px;font-weight:900;color:#fff;margin-bottom:4px;}
+.mm-page-sub{color:#555;margin-bottom:32px;font-size:13px;}
+.place-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:20px;}
+.place-card{background:#111;border:1px solid #222;border-radius:14px;overflow:hidden;cursor:pointer;transition:all .2s;}
+.place-card:hover{border-color:#FF6B0066;transform:translateY(-3px);}
+.place-thumb{height:110px;display:flex;align-items:center;justify-content:center;font-size:48px;}
+.place-info{padding:12px;}
+.place-name{font-weight:800;font-size:13px;margin-bottom:2px;}
+.place-date{font-size:11px;color:#555;}
+.place-new{background:linear-gradient(135deg,#1a0a00,#0d0d0d);border:2px dashed #FF6B0033;border-radius:14px;height:168px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;gap:8px;}
+.place-new:hover{border-color:#FF6B00;background:#FF6B0011;}
+.place-new-ico{font-size:36px;}
+.place-new-txt{font-weight:800;color:#FF6B00;font-size:13px;}
+
+/* TEMPLATES */
+.tpl-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;}
+.tpl-card{background:#111;border:1px solid #222;border-radius:12px;overflow:hidden;cursor:pointer;transition:all .2s;}
+.tpl-card:hover{border-color:#FF6B0066;transform:translateY(-2px);}
+.tpl-thumb{height:120px;display:flex;align-items:center;justify-content:center;font-size:52px;}
+.tpl-info{padding:10px 14px;}
+.tpl-name{font-weight:800;font-size:13px;}
+.tpl-desc{font-size:11px;color:#555;margin-top:2px;}
+.open-btn{
+  margin-top:20px;padding:12px 28px;background:#FF6B00;border:none;border-radius:10px;
+  color:#0d0d0d;font-weight:900;font-size:14px;cursor:pointer;font-family:'Nunito',sans-serif;
+  letter-spacing:1px;transition:all .2s;
+}
+.open-btn:hover{background:#FFB347;}
+
+/* ─── STUDIO ─────────────────────────────────── */
+#studio{position:fixed;inset:0;display:none;flex-direction:column;}
+
+/* TITLE BAR */
+.titlebar{
+  height:28px;background:#0f0f17;border-bottom:1px solid #FF6B0015;
+  display:flex;align-items:center;padding:0 10px;gap:6px;flex-shrink:0;
+}
+.tb-logo{display:flex;align-items:center;gap:6px;margin-right:8px;}
+.tb-title{font-size:12px;font-weight:900;color:#FF6B00;letter-spacing:1.5px;}
+.tb-menu-item{font-size:11px;color:#777;padding:3px 8px;border-radius:4px;cursor:pointer;font-weight:600;}
+.tb-menu-item:hover{background:#1a1a2a;color:#ccc;}
+.tb-right{margin-left:auto;display:flex;align-items:center;gap:8px;}
+.tb-bux{background:#FF6B0015;border:1px solid #FF6B0033;border-radius:12px;padding:2px 10px;font-size:11px;color:#FF8C00;font-weight:800;cursor:pointer;}
+.tb-user{font-size:11px;color:#555;font-weight:600;}
+.tb-dot{width:12px;height:12px;border-radius:50%;border:none;cursor:pointer;}
+.tb-dot.red{background:#EF4444;}
+.tb-dot.yellow{background:#FFB347;}
+.tb-dot.green{background:#22C55E;}
+
+/* RIBBON TABS */
+.ribbon-tabs{
+  height:26px;background:#13131f;border-bottom:1px solid #FF6B0015;
+  display:flex;align-items:flex-end;padding:0 4px;flex-shrink:0;
+}
+.rtab{
+  padding:5px 14px;font-size:11px;font-weight:700;cursor:pointer;border-radius:4px 4px 0 0;
+  color:#555;border:1px solid transparent;border-bottom:none;transition:all .15s;
+  background:transparent;letter-spacing:.3px;
+}
+.rtab:hover{color:#aaa;background:#1a1a2a;}
+.rtab.active{background:#1e1e2e;color:#FF8C00;border-color:#FF6B0033;}
+.rtab-play{
+  margin-left:auto;display:flex;align-items:center;gap:4px;margin-bottom:3px;
+}
+.play-btn{
+  padding:3px 12px;border:none;border-radius:4px;cursor:pointer;font-size:11px;
+  font-weight:800;font-family:'Nunito',sans-serif;transition:all .2s;letter-spacing:.5px;
+}
+.play-btn.run{background:#22C55E;color:#0d0d0d;}
+.play-btn.run:hover{background:#16A34A;}
+.play-btn.stop{background:#EF4444;color:#fff;display:none;}
+.play-btn.pause-btn{background:#3B82F6;color:#fff;}
+
+/* RIBBON BAR */
+.ribbon{
+  height:68px;background:#1e1e2e;border-bottom:2px solid #FF6B0022;
+  display:flex;align-items:stretch;padding:0 6px;flex-shrink:0;overflow-x:auto;
+}
+.ribbon::-webkit-scrollbar{height:3px;}
+.ribbon::-webkit-scrollbar-thumb{background:#333;}
+.r-group{
+  display:flex;flex-direction:column;border-right:1px solid #2a2a3a;
+  padding:4px 6px;min-width:fit-content;
+}
+.r-group-title{
+  font-size:9px;color:#FF6B0055;letter-spacing:2px;font-weight:900;
+  text-transform:uppercase;text-align:center;margin-top:auto;padding-top:3px;
+}
+.r-tools{display:flex;gap:2px;flex:1;align-items:center;}
+.r-btn{
+  display:flex;flex-direction:column;align-items:center;gap:2px;
+  padding:4px 6px;border-radius:6px;cursor:pointer;transition:all .15s;
+  min-width:44px;border:1px solid transparent;
+}
+.r-btn:hover{background:#2a2a3a;border-color:#3a3a4a;}
+.r-btn.active{background:#FF6B0022;border-color:#FF6B0055;}
+.r-btn .r-ico{font-size:20px;line-height:1;}
+.r-btn .r-lbl{font-size:9px;color:#777;font-weight:700;text-align:center;white-space:nowrap;}
+.r-btn.active .r-lbl{color:#FF8C00;}
+.r-sep{width:1px;background:#2a2a3a;margin:8px 4px;}
+.r-btn-sm{
+  display:flex;align-items:center;gap:4px;padding:3px 8px;border-radius:5px;
+  cursor:pointer;transition:all .15s;border:1px solid transparent;font-size:11px;color:#aaa;font-weight:600;
+}
+.r-btn-sm:hover{background:#2a2a3a;}
+.r-btn-sm .r-ico{font-size:14px;}
+
+/* MAIN BODY */
+.studio-body{flex:1;display:flex;overflow:hidden;}
+
+/* TOOLBOX PANEL */
+.panel-toolbox{
+  width:240px;background:#1a1a2a;border-right:1px solid #2a2a3a;
+  display:flex;flex-direction:column;flex-shrink:0;
+}
+.panel-header{
+  height:32px;background:#13131f;border-bottom:1px solid #2a2a3a;
+  display:flex;align-items:center;padding:0 10px;gap:6px;flex-shrink:0;
+}
+.panel-title{font-size:11px;font-weight:900;color:#aaa;letter-spacing:1px;flex:1;}
+.panel-icon-btn{font-size:14px;cursor:pointer;color:#555;padding:2px;border-radius:3px;}
+.panel-icon-btn:hover{color:#aaa;background:#2a2a3a;}
+.tb-search{
+  padding:6px 8px;border-bottom:1px solid #2a2a3a;
+}
+.tb-search input{
+  width:100%;background:#0d0d0d;border:1px solid #333;border-radius:6px;
+  padding:5px 8px;color:#ccc;font-size:11px;font-family:'Nunito',sans-serif;outline:none;
+}
+.tb-search input:focus{border-color:#FF6B0055;}
+.tb-cats{
+  display:flex;gap:4px;padding:6px 8px;border-bottom:1px solid #2a2a3a;flex-wrap:wrap;
+}
+.tb-cat{
+  padding:3px 10px;border-radius:12px;font-size:10px;font-weight:800;cursor:pointer;
+  transition:all .15s;background:#0d0d0d;color:#555;border:1px solid #222;
+}
+.tb-cat:hover{color:#aaa;}
+.tb-cat.active{background:#FF6B0033;color:#FF8C00;border-color:#FF6B0055;}
+.tb-section{font-size:10px;font-weight:900;color:#FF6B0066;letter-spacing:2px;padding:8px 10px 4px;text-transform:uppercase;}
+.tb-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:0 8px 8px;}
+.tb-item{
+  background:#0d0d0d;border:1px solid #222;border-radius:8px;padding:10px 6px;
+  cursor:pointer;text-align:center;transition:all .15s;
+}
+.tb-item:hover{border-color:#FF6B0055;background:#1a0a00;}
+.tb-item .ti-ico{font-size:28px;margin-bottom:4px;}
+.tb-item .ti-name{font-size:10px;font-weight:700;color:#aaa;}
+.tb-item .ti-tag{font-size:9px;color:#22C55E;font-weight:800;}
+.tb-item .ti-price{font-size:9px;color:#FF8C00;font-weight:800;}
+.tb-scroll{flex:1;overflow-y:auto;}
+.tb-scroll::-webkit-scrollbar{width:3px;}
+.tb-scroll::-webkit-scrollbar-thumb{background:#333;}
+
+/* VIEWPORT */
+.viewport{flex:1;position:relative;overflow:hidden;}
+.viewport-tabs{
+  height:28px;background:#13131f;border-bottom:1px solid #2a2a3a;
+  display:flex;align-items:center;padding:0 6px;gap:2px;
+}
+.vp-tab{
+  display:flex;align-items:center;gap:5px;padding:3px 12px;border-radius:4px;
+  font-size:11px;font-weight:700;cursor:pointer;color:#666;border:1px solid transparent;
+  transition:all .15s;
+}
+.vp-tab.active{background:#1e1e2e;color:#ccc;border-color:#3a3a4a;}
+.vp-tab .tab-close{color:#555;margin-left:4px;font-size:10px;}
+.vp-tab .tab-close:hover{color:#EF4444;}
+#three-canvas{width:100%;height:100%;display:block;}
+.vp-info-overlay{
+  position:absolute;top:8px;left:8px;pointer-events:none;
+  background:rgba(0,0,0,.6);border:1px solid #2a2a3a;border-radius:6px;
+  padding:6px 10px;font-size:10px;color:#555;line-height:1.7;
+}
+.vp-info-overlay .studio-name{color:#FF6B00;font-weight:900;font-size:10px;letter-spacing:2px;}
+.vp-coords{
+  position:absolute;bottom:6px;left:8px;pointer-events:none;
+  background:rgba(0,0,0,.6);border-radius:5px;padding:3px 8px;font-size:10px;color:#555;
+}
+/* axis gizmo */
+.vp-axis{
+  position:absolute;bottom:10px;right:10px;width:60px;height:60px;pointer-events:none;
+}
+
+/* GAME HUD */
+#game-hud{position:absolute;inset:0;pointer-events:none;display:none;}
+.hud-cross{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);}
+.hud-cross::before,.hud-cross::after{content:'';position:absolute;background:rgba(255,255,255,.8);}
+.hud-cross::before{width:2px;height:16px;left:50%;transform:translateX(-50%);}
+.hud-cross::after{height:2px;width:16px;top:50%;transform:translateY(-50%);}
+.hud-bottom{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);display:flex;gap:12px;}
+.hud-pill{background:rgba(0,0,0,.75);border-radius:20px;padding:5px 16px;font-size:12px;font-weight:800;backdrop-filter:blur(4px);}
+.hud-pill.hp{border:2px solid #22C55E;color:#22C55E;}
+.hud-pill.bux{border:2px solid #FF8C00;color:#FF8C00;}
+.hud-keys{position:absolute;top:8px;right:8px;background:rgba(0,0,0,.6);border-radius:8px;padding:8px 12px;font-size:10px;color:#555;line-height:2;backdrop-filter:blur(4px);}
+
+/* RIGHT PANELS */
+.panels-right{width:240px;display:flex;flex-direction:column;border-left:1px solid #2a2a3a;flex-shrink:0;}
+
+/* EXPLORER */
+.explorer{flex:1;display:flex;flex-direction:column;border-bottom:1px solid #2a2a3a;overflow:hidden;}
+.exp-search{padding:4px 6px;border-bottom:1px solid #2a2a3a;}
+.exp-search input{width:100%;background:#0d0d0d;border:1px solid #222;border-radius:4px;padding:3px 7px;color:#ccc;font-size:10px;font-family:'Nunito',sans-serif;outline:none;}
+.exp-tree{flex:1;overflow-y:auto;padding:4px 0;}
+.exp-tree::-webkit-scrollbar{width:3px;}
+.exp-tree::-webkit-scrollbar-thumb{background:#333;}
+.tree-node{display:flex;align-items:center;gap:0;padding:2px 0;cursor:pointer;transition:background .1s;}
+.tree-node:hover{background:#2a2a3a;}
+.tree-node.selected{background:#FF6B0022;}
+.tree-indent{flex-shrink:0;}
+.tree-arrow{width:14px;flex-shrink:0;text-align:center;font-size:9px;color:#555;transition:transform .15s;}
+.tree-arrow.open{transform:rotate(90deg);}
+.tree-icon{font-size:13px;width:18px;flex-shrink:0;text-align:center;}
+.tree-name{font-size:11px;font-weight:600;color:#ccc;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.tree-name.selected{color:#FF8C00;}
+.tree-children{display:none;}
+.tree-children.open{display:block;}
+.tree-node .scripts-badge{font-size:9px;color:#3B82F6;margin-left:3px;}
+
+/* PROPERTIES */
+.properties{height:280px;display:flex;flex-direction:column;flex-shrink:0;}
+.props-scroll{flex:1;overflow-y:auto;padding:4px 0;}
+.props-scroll::-webkit-scrollbar{width:3px;}
+.props-scroll::-webkit-scrollbar-thumb{background:#333;}
+.prop-filter{padding:4px 6px;border-bottom:1px solid #2a2a3a;}
+.prop-filter input{width:100%;background:#0d0d0d;border:1px solid #222;border-radius:4px;padding:3px 7px;color:#ccc;font-size:10px;font-family:'Nunito',sans-serif;outline:none;}
+.prop-category{font-size:9px;font-weight:900;color:#FF6B0055;letter-spacing:2px;padding:6px 10px 3px;text-transform:uppercase;cursor:pointer;}
+.prop-row{display:flex;align-items:center;border-bottom:1px solid #1a1a2a;min-height:24px;}
+.prop-row:hover{background:#1e1e2e;}
+.prop-key{width:90px;flex-shrink:0;padding:3px 8px;font-size:10px;color:#888;border-right:1px solid #1a1a2a;font-weight:600;}
+.prop-val-cell{flex:1;padding:2px 6px;}
+.prop-input{width:100%;background:transparent;border:none;color:#ccc;font-size:10px;font-family:'Nunito',sans-serif;outline:none;padding:0;}
+.prop-input:focus{color:#fff;}
+.prop-color-btn{width:20px;height:14px;border-radius:3px;border:1px solid #444;cursor:pointer;background:none;}
+.prop-select{width:100%;background:transparent;border:none;color:#ccc;font-size:10px;font-family:'Nunito',sans-serif;outline:none;}
+.prop-check{accent-color:#FF6B00;}
+
+/* SCRIPT EDITOR PANEL */
+#script-panel{
+  position:absolute;bottom:0;left:240px;right:240px;
+  height:220px;background:#0d0d15;border-top:2px solid #FF6B0033;z-index:50;display:none;
+  flex-direction:column;
+}
+.script-header{height:32px;background:#0a0a12;border-bottom:1px solid #1a1a2a;display:flex;align-items:center;gap:8px;padding:0 10px;}
+.script-tab-item{padding:4px 12px;border-radius:4px;font-size:11px;font-weight:700;cursor:pointer;color:#666;transition:all .15s;}
+.script-tab-item.active{background:#FF6B0022;color:#FF8C00;}
+.script-template-select{background:#0d0d0d;border:1px solid #2a2a3a;border-radius:4px;padding:3px 6px;color:#aaa;font-size:10px;font-family:'Nunito',sans-serif;outline:none;margin-left:4px;}
+.script-run-btn{padding:3px 12px;background:#22C55E;border:none;border-radius:4px;color:#0d0d0d;font-weight:800;cursor:pointer;font-size:11px;font-family:'Nunito',sans-serif;}
+.script-close-btn{margin-left:auto;background:none;border:none;color:#555;cursor:pointer;font-size:16px;line-height:1;}
+.script-close-btn:hover{color:#EF4444;}
+.script-body{flex:1;display:flex;overflow:hidden;}
+.script-gutter{padding:5px 6px;background:#080810;color:#333;font-family:'Courier New',monospace;font-size:11px;line-height:1.65;text-align:right;min-width:28px;user-select:none;border-right:1px solid #1a1a2a;}
+#script-area{flex:1;padding:5px 8px;background:transparent;border:none;outline:none;color:#cdd6f4;font-family:'Courier New',monospace;font-size:11px;line-height:1.65;resize:none;caret-color:#FF6B00;}
+
+/* CONSOLE */
+#console-panel{
+  position:absolute;bottom:0;left:240px;right:240px;
+  height:100px;background:#050508;border-top:1px solid #1a1a2a;z-index:40;display:none;overflow:hidden;
+}
+.console-header{height:22px;background:#080810;border-bottom:1px solid #1a1a2a;display:flex;align-items:center;padding:0 8px;}
+.console-htitle{font-size:9px;font-weight:900;letter-spacing:2px;color:#444;text-transform:uppercase;}
+.console-clear{margin-left:auto;background:none;border:none;color:#444;cursor:pointer;font-size:10px;font-family:'Nunito',sans-serif;}
+.console-scroll{height:78px;overflow-y:auto;padding:2px 0;}
+.console-scroll::-webkit-scrollbar{width:3px;}
+.console-scroll::-webkit-scrollbar-thumb{background:#222;}
+.clog{padding:1px 10px;font-family:'Courier New',monospace;font-size:10px;border-bottom:1px solid #0a0a0a;}
+.clog.info{color:#888;}
+.clog.ok{color:#22C55E;}
+.clog.warn{color:#FFB347;}
+.clog.err{color:#EF4444;}
+
+/* NOTIFY */
+.notif{
+  position:fixed;top:54px;right:16px;background:#1a1a2a;border:1px solid #FF6B0044;
+  border-radius:8px;padding:8px 16px;font-size:12px;font-weight:700;color:#FF8C00;
+  z-index:9999;pointer-events:none;animation:notifIn .25s ease;
+}
+@keyframes notifIn{from{transform:translateX(12px);opacity:0}to{transform:translateX(0);opacity:1}}
+
+/* Status bar */
+.statusbar{
+  height:20px;background:#0f0f17;border-top:1px solid #FF6B0015;
+  display:flex;align-items:center;padding:0 10px;gap:16px;flex-shrink:0;
+}
+.status-item{font-size:9px;color:#444;font-weight:600;}
+.status-item span{color:#666;}
+
+/* Resize handle */
+.resize-handle{width:3px;background:#2a2a3a;cursor:col-resize;flex-shrink:0;}
+.resize-handle:hover{background:#FF6B0033;}
+
+input[type=color]{cursor:pointer;}
+select{cursor:pointer;}
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-track{background:#0d0d0d;}
+::-webkit-scrollbar-thumb{background:#2a2a3a;border-radius:2px;}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════
+     MAIN MENU
+══════════════════════════════════════════ -->
+<div id="main-menu">
+  <div class="mm-sidebar">
+    <div class="mm-logo">
+      <div class="mm-logo-row">
+        <svg width="36" height="36" viewBox="0 0 48 48" fill="none">
+          <ellipse cx="24" cy="30" rx="12" ry="14" fill="#FF6B00"/>
+          <ellipse cx="24" cy="30" rx="8" ry="10" fill="#FF8C00"/>
+          <rect x="20" y="6" width="4" height="14" rx="2" fill="#22C55E"/>
+          <rect x="25" y="4" width="3" height="12" rx="1.5" fill="#16A34A" transform="rotate(15 25 4)"/>
+          <rect x="17" y="5" width="3" height="11" rx="1.5" fill="#16A34A" transform="rotate(-15 17 5)"/>
+        </svg>
+        <div>
+          <div class="mm-title">TwodBlox</div>
+          <div class="mm-sub">Studio</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mm-nav">
+      <div class="mm-nav-item active" onclick="mmNav('new',this)"><span class="ico">🏠</span> Главная</div>
+      <div class="mm-nav-item" onclick="mmNav('recent',this)"><span class="ico">🕐</span> Недавние</div>
+      <div class="mm-nav-item" onclick="mmNav('templates',this)"><span class="ico">📐</span> Шаблоны</div>
+      <div class="mm-nav-sep"></div>
+      <div class="mm-nav-item" onclick="mmNav('learn',this)"><span class="ico">📖</span> Обучение</div>
+      <div class="mm-nav-item" onclick="mmNav('community',this)"><span class="ico">👥</span> Сообщество</div>
+      <div class="mm-nav-sep"></div>
+      <div class="mm-nav-item" onclick="openStore()"><span class="ico">🏪</span> Магазин</div>
+      <div class="mm-nav-item" onclick="mmNav('settings',this)"><span class="ico">⚙️</span> Настройки</div>
+    </div>
+
+    <div class="mm-bottom">
+      <div class="mm-user">
+        <div class="mm-avatar" id="mm-avatar">T</div>
+        <div>
+          <div class="mm-uname" id="mm-uname">—</div>
+          <div class="mm-bux">🪙 <span id="mm-bux">0</span> TwodBux</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mm-content">
+
+    <!-- AUTH OVERLAY (shown first) -->
+    <div id="auth-page" style="flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column;padding:40px;">
+      <svg width="56" height="56" viewBox="0 0 48 48" fill="none" style="margin-bottom:16px;">
+        <ellipse cx="24" cy="30" rx="12" ry="14" fill="#FF6B00"/>
+        <ellipse cx="24" cy="30" rx="8" ry="10" fill="#FF8C00"/>
+        <rect x="20" y="6" width="4" height="14" rx="2" fill="#22C55E"/>
+        <rect x="25" y="4" width="3" height="12" rx="1.5" fill="#16A34A" transform="rotate(15 25 4)"/>
+        <rect x="17" y="5" width="3" height="11" rx="1.5" fill="#16A34A" transform="rotate(-15 17 5)"/>
+      </svg>
+      <div style="font-size:32px;font-weight:900;color:#fff;letter-spacing:2px;margin-bottom:4px;">TwodBlox Studio</div>
+      <div style="color:#555;font-size:13px;margin-bottom:36px;letter-spacing:3px;text-transform:uppercase;">Версия 2.0 • Build Engine</div>
+
+      <div style="display:flex;gap:8px;margin-bottom:24px;">
+        <button class="auth-tab-btn active" id="atab-login" onclick="setAMode('login')" style="padding:8px 24px;border-radius:8px;border:none;cursor:pointer;font-weight:800;font-size:13px;font-family:'Nunito',sans-serif;background:#FF6B00;color:#0d0d0d;transition:all .2s;">Войти</button>
+        <button class="auth-tab-btn" id="atab-reg" onclick="setAMode('reg')" style="padding:8px 24px;border-radius:8px;border:1px solid #FF6B0033;cursor:pointer;font-weight:800;font-size:13px;font-family:'Nunito',sans-serif;background:transparent;color:#FF6B00;transition:all .2s;">Регистрация</button>
+      </div>
+
+      <div style="width:320px;">
+        <div id="auth-err" style="color:#EF4444;font-size:12px;text-align:center;margin-bottom:8px;min-height:16px;"></div>
+        <div style="margin-bottom:12px;">
+          <div style="font-size:10px;font-weight:900;color:#FF6B0088;letter-spacing:2px;text-transform:uppercase;margin-bottom:5px;">Логин</div>
+          <input id="inp-u" placeholder="имя пользователя..." style="width:100%;padding:11px 13px;background:#111;border:1px solid #2a2a2a;border-radius:8px;color:#fff;font-size:13px;font-family:'Nunito',sans-serif;outline:none;" onfocus="this.style.borderColor='#FF6B00'" onblur="this.style.borderColor='#2a2a2a'"/>
+        </div>
+        <div style="margin-bottom:16px;">
+          <div style="font-size:10px;font-weight:900;color:#FF6B0088;letter-spacing:2px;text-transform:uppercase;margin-bottom:5px;">Пароль</div>
+          <input id="inp-p" type="password" placeholder="пароль..." style="width:100%;padding:11px 13px;background:#111;border:1px solid #2a2a2a;border-radius:8px;color:#fff;font-size:13px;font-family:'Nunito',sans-serif;outline:none;" onfocus="this.style.borderColor='#FF6B00'" onblur="this.style.borderColor='#2a2a2a'"/>
+        </div>
+        <button id="auth-btn" onclick="doAuth()" style="width:100%;padding:13px;background:#FF6B00;border:none;border-radius:10px;color:#0d0d0d;font-weight:900;font-size:14px;cursor:pointer;font-family:'Nunito',sans-serif;letter-spacing:1px;margin-bottom:8px;transition:all .2s;">ВОЙТИ</button>
+        <button onclick="doGuest()" style="width:100%;padding:10px;background:transparent;border:1px solid #2a2a2a;border-radius:10px;color:#555;font-weight:700;font-size:13px;cursor:pointer;font-family:'Nunito',sans-serif;transition:all .2s;">👤 Войти гостем</button>
+      </div>
+    </div>
+
+    <!-- MAIN PAGES (hidden until logged in) -->
+    <div id="mm-pages" style="flex:1;display:none;overflow:hidden;">
+
+      <!-- HOME -->
+      <div class="mm-page active" id="pg-new">
+        <div class="mm-page-title">Начать проект</div>
+        <div class="mm-page-sub">Создай новый плейс или открой существующий</div>
+        <div class="place-grid">
+          <div class="place-new" onclick="openStudio('Новый плейс')">
+            <div class="place-new-ico">➕</div>
+            <div class="place-new-txt">Новый плейс</div>
+            <div style="font-size:10px;color:#555;">Пустая карта</div>
+          </div>
+          <div class="place-card" onclick="openStudio('Моя игра 1')">
+            <div class="place-thumb" style="background:linear-gradient(135deg,#1a0a00,#2a1000);">🌋</div>
+            <div class="place-info">
+              <div class="place-name">Моя игра 1</div>
+              <div class="place-date">23 февр. 2026</div>
+            </div>
+          </div>
+          <div class="place-card" onclick="openStudio('Obby v2')">
+            <div class="place-thumb" style="background:linear-gradient(135deg,#0a1a0a,#0d2010);">🟠</div>
+            <div class="place-info">
+              <div class="place-name">Obby v2</div>
+              <div class="place-date">20 февр. 2026</div>
+            </div>
+          </div>
+          <div class="place-card" onclick="openStudio('Tycoon Test')">
+            <div class="place-thumb" style="background:linear-gradient(135deg,#0a0a1a,#10102a);">🏗️</div>
+            <div class="place-info">
+              <div class="place-name">Tycoon Test</div>
+              <div class="place-date">17 февр. 2026</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TEMPLATES -->
+      <div class="mm-page" id="pg-templates">
+        <div class="mm-page-title">Шаблоны</div>
+        <div class="mm-page-sub">Начни с готового шаблона</div>
+        <div class="tpl-grid">
+          <div class="tpl-card" onclick="openStudio('Flat Terrain')">
+            <div class="tpl-thumb" style="background:linear-gradient(135deg,#0a1a0a,#0d2010);">🌿</div>
+            <div class="tpl-info"><div class="tpl-name">Flat Terrain</div><div class="tpl-desc">Ровная карта с травой</div></div>
+          </div>
+          <div class="tpl-card" onclick="openStudio('Obby Kit')">
+            <div class="tpl-thumb" style="background:linear-gradient(135deg,#1a0a00,#2a1000);">🟧</div>
+            <div class="tpl-info"><div class="tpl-name">Obby Kit</div><div class="tpl-desc">Набор для паркура</div></div>
+          </div>
+          <div class="tpl-card" onclick="openStudio('Horror Map')">
+            <div class="tpl-thumb" style="background:linear-gradient(135deg,#050505,#0a0a0a);">🌑</div>
+            <div class="tpl-info"><div class="tpl-name">Horror Map</div><div class="tpl-desc">Тёмный лес, туман</div></div>
+          </div>
+          <div class="tpl-card" onclick="openStudio('City Base')">
+            <div class="tpl-thumb" style="background:linear-gradient(135deg,#0a0a1a,#10102a);">🏙️</div>
+            <div class="tpl-info"><div class="tpl-name">City Base</div><div class="tpl-desc">Городская карта</div></div>
+          </div>
+          <div class="tpl-card" onclick="openStudio('Island')">
+            <div class="tpl-thumb" style="background:linear-gradient(135deg,#00151a,#002a2a);">🏝️</div>
+            <div class="tpl-info"><div class="tpl-name">Island</div><div class="tpl-desc">Тропический остров</div></div>
+
